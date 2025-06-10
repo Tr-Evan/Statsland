@@ -61,8 +61,7 @@ src
 - **Vite**: Outil de build et serveur de développement rapide.
 - **Chart.js**: Bibliothèque pour des graphiques dynamiques.
 - **React Router**: Pour la navigation entre les pages.
-- **Redux Toolkit**: Pour la gestion de l'état global.
-- **Axios**: Pour les requêtes HTTP.
+
 
 ---
 
@@ -73,8 +72,7 @@ src
 - [react-chartjs-2](https://react-chartjs-2.js.org/)
 - [chart.js](https://www.chartjs.org/)
 - [react-router-dom](https://reactrouter.com/)
-- [Redux Toolkit](https://redux-toolkit.js.org/) *(si utilisé)*
-- [Axios](https://axios-http.com/) *(si utilisé)*
+
 
 ---
 
@@ -119,27 +117,9 @@ src
 
 ## 🖥️ Auteur & contact
 
-Projet réalisé par [Votre Nom ou Organisation].  
-Pour toute question ou suggestion : [votre.email@exemple.com]
+Projet réalisé par Evan Troget.  
+
 
 ---
 
-## 🤝 Contribuer
-
-Les contributions sont les bienvenues! Voici comment vous pouvez aider:
-
-- Signalez des bugs ou des problèmes que vous rencontrez.
-- Proposez de nouvelles fonctionnalités ou améliorations.
-- Soumettez des pull requests avec des corrections ou des ajouts.
-
-Veuillez lire le fichier `CONTRIBUTING.md` pour plus de détails.
-
----
-
-## 📄 Licence
-
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus d'informations.
-
----
-
-Merci d'avoir consulté Statsland! Nous espérons que ce projet vous sera utile et inspirant. N'hésitez pas à nous faire part de vos retours ou suggestions.
+Merci d'avoir consulté Statsland! J'espère que ce projet vous sera utile et inspirant.
