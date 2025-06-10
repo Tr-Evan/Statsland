@@ -1,0 +1,40 @@
+:root {
+  --background-color-light: #ffffff;
+  --background-color-dark: #242424;
+  --text-color-light: #213547;
+  --text-color-dark: rgba(255, 255, 255, 0.87);
+  --link-color-light: #646cff;
+  --link-color-dark: #646cff;
+  --button-background-light: #f9f9f9;
+  --button-background-dark: #1a1a1a;
+  --button-border-color-light: transparent;
+  --button-border-color-dark: transparent;
+}
+
+body.light-mode {
+  background: #fff;
+  color: #23272f;
+}
+
+body.dark-mode {
+  background: #181a20;
+  color: #f3f3f3;
+}
+
+a {
+  color: var(--link-color-light);
+}
+
+body.dark-mode a {
+  color: var(--link-color-dark);
+}
+
+button {
+  background-color: var(--button-background-light);
+  border: 1px solid var(--button-border-color-light);
+}
+
+body.dark-mode button {
+  background-color: var(--button-background-dark);
+  border: 1px solid var(--button-border-color-dark);
+}

@@ -1,0 +1,112 @@
+:root {
+  --header-bg: #23272f;
+  --header-text: #fff;
+  --sidebar-bg: #23272f;
+  --sidebar-text: #fff;
+  --sidebar-link-bg: rgba(100, 108, 255, 0.10);
+  --sidebar-link-hover-bg: rgba(100, 108, 255, 0.25);
+  --sidebar-link-hover-text: #fff;
+  --main-bg: #181a20;
+  --main-text: #f3f3f3;
+  --theme-btn-bg: #23272f;
+  --theme-btn-text: #fff;
+  --theme-btn-hover-bg: #646cff;
+  --theme-btn-hover-text: #fff;
+}
+
+body.light-mode {
+  --header-bg: #f7f7fa;
+  --header-text: #23272f;
+  --sidebar-bg: #f7f7fa;
+  --sidebar-text: #23272f;
+  --sidebar-link-bg: rgba(100, 108, 255, 0.10);
+  --sidebar-link-hover-bg: #646cff;
+  --sidebar-link-hover-text: #fff;
+  --main-bg: #fff;
+  --main-text: #23272f;
+  --theme-btn-bg: #e0e7ff;
+  --theme-btn-text: #23272f;
+  --theme-btn-hover-bg: #646cff;
+  --theme-btn-hover-text: #fff;
+}
+
+body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background: var(--main-bg);
+  color: var(--main-text);
+  overflow: hidden;
+}
+
+.app {
+  min-height: 100vh;
+  background: var(--main-bg);
+  color: var(--main-text);
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+}
+
+h1 {
+  font-size: 2.5em;
+  margin: 0;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  background-color: var(--button-background);
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: var(--button-hover-border);
+}
+
+.main-content {
+  margin-left: 240px;
+  margin-top: 0;
+  padding: 1rem ;
+  min-height: 100vh;
+  max-height: 100vh;
+  background: var(--main-bg);
+  color: var(--main-text);
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+  box-shadow: -2px 0 16px rgba(0,0,0,0.04);
+  transition: background 0.4s, color 0.4s;
+  animation: fadeInSlide 0.7s cubic-bezier(.4,0,.2,1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background-color: #ffffff;
+    --text-color: #213547;
+    --link-color: #646cff;
+    --link-hover-color: #747bff;
+    --button-background: #f9f9f9;
+  }
+}
