@@ -154,40 +154,41 @@ function CategoryB() {
           <div className="counter-list large">
             <div className="counter-grid">
               {colors.map((c, i) => {
-                const objectif = 50; // Objectif à atteindre
+                const objectif = 50;
                 const value = Math.min(counts[i], objectif);
                 const percent = value / objectif;
-                const radius = 25;
+                const svgSize = 120;
+                const radius = 50;
+                const strokeWidth = 10;
                 const circumference = 2 * Math.PI * radius;
                 const dash = percent * circumference;
                 return (
-                  <div
-                    className="counter-square"
-                    key={i}
-                    style={{ background: c.box }}
-                  >
-                    <svg className="progress-circle" width="56" height="56">
-                      <circle
-                        className="progress-bg"
-                        cx="28" cy="28" r={radius}
-                        stroke="#e0e0e0"
-                        strokeWidth="7"
-                        fill="none"
-                      />
-                      <circle
-                        className="progress-bar"
-                        cx="28" cy="28" r={radius}
-                        stroke={c.border}
-                        strokeWidth="7"
-                        fill="none"
-                        strokeDasharray={`${dash},${circumference - dash}`}
-                      />
-                    </svg>
-                    <button
-                      className="plus-btn"
-                      style={{background: c.grad}}
-                      onClick={() => handleIncrement(i)}
-                    >+1</button>
+                  <div className="counter-square" key={i} style={{ background: c.box }}>
+                    <div className="counter-center">
+                      <svg className="progress-circle" width={svgSize} height={svgSize}>
+                        <circle
+                          className="progress-bg"
+                          cx={svgSize/2} cy={svgSize/2} r={radius}
+                          stroke="#e0e0e0"
+                          strokeWidth={strokeWidth}
+                          fill="none"
+                        />
+                        <circle
+                          className="progress-bar"
+                          cx={svgSize/2} cy={svgSize/2} r={radius}
+                          stroke={c.border}
+                          strokeWidth={strokeWidth}
+                          fill="none"
+                          strokeDasharray={`${dash},${circumference - dash}`}
+                          style={{transition: "stroke-dasharray 0.3s"}}
+                        />
+                      </svg>
+                      <button
+                        className="plus-btn"
+                        style={{background: c.grad}}
+                        onClick={() => handleIncrement(i)}
+                      >+1</button>
+                    </div>
                     <div className="counter-label">{c.label}</div>
                   </div>
                 );

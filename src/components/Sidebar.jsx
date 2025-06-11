@@ -23,6 +23,9 @@ const Sidebar = ({ theme, toggleTheme }) => {
       <nav className="sidebar-nav">
         <ul>
           <li>
+            <Link to="/" className={`home-link${location.pathname === '/' ? ' active' : ''}`}>Accueil</Link>
+          </li>
+          <li>
             <Link to="/category-a" className={location.pathname === '/category-a' ? 'active' : ''}>Category A</Link>
           </li>
           <li>
@@ -36,7 +39,7 @@ const Sidebar = ({ theme, toggleTheme }) => {
               to="/recap"
               className={`recap-link${location.pathname === '/recap' ? ' active' : ''}`}
             >
-              <span>📊 Récapitulatif</span>
+              <span>Récap</span>
             </Link>
           </li>
         </ul>
