@@ -11,7 +11,11 @@ function Dashboard() {
       justifyContent: "center",
       textAlign: "center"
     }}>
-      <h1 style={{color:'#646cff', fontSize:"2.3rem", marginBottom: "0.5em"}}>Bienvenue sur <span style={{fontWeight:700}}>Statsland</span> !</h1>
+      <h1 style={{
+        color: "var(--accent)",
+        fontSize: "var(--font-size-xl)",
+        fontWeight: "var(--font-weight-bold)"
+      }}>Bienvenue sur <span style={{fontWeight:700}}>Statsland</span> !</h1>
       <p style={{fontSize:"1.2em", maxWidth: 480, margin: "0 auto 2em auto", color: "#444"}}>
         Statsland est un dashboard interactif pour suivre et visualiser vos compteurs personnalisés par catégorie, avec des graphiques dynamiques, des objectifs visuels et un mode sombre/clair.
       </p>

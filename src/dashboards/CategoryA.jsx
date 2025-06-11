@@ -37,7 +37,7 @@ const CategoryA = () => {
       y: { beginAtZero: true },
     },
     plugins: {
-      legend: { labels: { color: '#646cff' } }
+      legend: { labels: { color: getComputedStyle(document.body).getPropertyValue('--main-text') } }
     }
   };
 

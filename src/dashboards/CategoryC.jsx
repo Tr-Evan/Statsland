@@ -38,7 +38,7 @@ function CategoryC() {
       y: { beginAtZero: true },
     },
     plugins: {
-      legend: { labels: { color: '#4bc0c0' } }
+      legend: { labels: { color: getComputedStyle(document.body).getPropertyValue('--main-text') } }
     }
   };
 
