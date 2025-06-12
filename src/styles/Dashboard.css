@@ -18,7 +18,6 @@ html, body, #root {
   padding: 0.5rem 2vw 0 2vw;
   gap: 1.2rem;
   transition: background 0.3s, color 0.3s;
-  margin-left: 240px; /* largeur de la sidebar */
 }
 
 @media (max-width: 900px) {

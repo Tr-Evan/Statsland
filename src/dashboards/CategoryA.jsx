@@ -144,7 +144,6 @@ const CategoryA = () => {
 
   return (
     <div className="dashboard">
-      <h2 style={{color: colors[0].border}}>Category A Statistics</h2>
       <div className="dashboard-row">
         <div className="dashboard-row-top">
           <div className="graph-container large">
