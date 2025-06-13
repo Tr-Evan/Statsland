@@ -4,7 +4,7 @@ import ThemeToggle from './ThemeToggle';
 import logo from '../assets/logo.svg';
 import '../styles/Sidebar.css';
 
-const Sidebar = ({ theme, toggleTheme }) => {
+const Sidebar = ({ theme, toggleTheme, config }) => {
   const [now, setNow] = useState(new Date());
   const location = useLocation();
 
@@ -25,15 +25,13 @@ const Sidebar = ({ theme, toggleTheme }) => {
           <li>
             <Link to="/" className={`home-link${location.pathname === '/' ? ' active' : ''}`}>Accueil</Link>
           </li>
-          <li>
-            <Link to="/category-a" className={location.pathname === '/category-a' ? 'active' : ''}>Category A</Link>
-          </li>
-          <li>
-            <Link to="/category-b" className={location.pathname === '/category-b' ? 'active' : ''}>Category B</Link>
-          </li>
-          <li>
-            <Link to="/category-c" className={location.pathname === '/category-c' ? 'active' : ''}>Category C</Link>
-          </li>
+          {config.categories.map(cat => (
+            <li key={cat.key}>
+              <Link to={`/${cat.key}`} className={location.pathname === `/${cat.key}` ? 'active' : ''}>
+                {cat.label}
+              </Link>
+            </li>
+          ))}
           <li>
             <Link
               to="/recap"

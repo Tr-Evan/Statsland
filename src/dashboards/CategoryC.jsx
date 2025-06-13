@@ -1,32 +1,43 @@
-import React, { useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Line } from 'react-chartjs-2';
+import React, { useState, useRef } from 'react';
+import { Bar, Line } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale, PointElement, LineElement } from 'chart.js';
 import '../styles/Dashboard.css';
 import { usePersistentState } from '../hooks/usePersistentState';
-
+import GraphFilters from '../components/GraphFilters';
+import { exportToCSV } from '../utils/exportCSV';
+import { FaPen } from "react-icons/fa";
 
 Chart.register(BarElement, CategoryScale, LinearScale, PointElement, LineElement);
 
-const colors = [
-  { bg: 'rgba(75, 192, 192, 0.6)', border: 'rgba(75, 192, 192, 1)', grad: 'linear-gradient(90deg,#4bc0c0 60%,#b2f7ef 100%)', box: 'rgba(75,192,192,0.13)', label: 'Compteur Vert' },
-  { bg: 'rgba(54, 162, 235, 0.6)', border: 'rgba(54, 162, 235, 1)', grad: 'linear-gradient(90deg,#36a2eb 60%,#81d4fa 100%)', box: 'rgba(54,162,235,0.13)', label: 'Compteur Bleu' },
-  { bg: 'rgba(255, 206, 86, 0.6)', border: 'rgba(255, 206, 86, 1)', grad: 'linear-gradient(90deg,#ffce56 60%,#ffe082 100%)', box: 'rgba(255,206,86,0.13)', label: 'Compteur Jaune' },
-  { bg: 'rgba(255, 99, 132, 0.6)', border: 'rgba(255, 99, 132, 1)', grad: 'linear-gradient(90deg,#ff6384 60%,#ffb1c1 100%)', box: 'rgba(255,99,132,0.13)', label: 'Compteur Rouge' },
-];
+function CategoryC({ config, setConfig }) {
+  const categoryKey = "category-c";
+  const counters = config.counters[categoryKey];
+  const categoryLabel = config.categories.find(cat => cat.key === categoryKey)?.label || "Catégorie";
 
-function CategoryC() {
   const [counts, setCounts] = usePersistentState('categoryC_counts', [0, 0, 0, 0]);
   const [history, setHistory] = usePersistentState('categoryC_history', []);
+  const [period, setPeriod] = useState("7d");
+  const [granularity, setGranularity] = useState("day");
+  const [customRange, setCustomRange] = useState({start: "", end: ""});
+  const [visibleCounters, setVisibleCounters] = useState([true, true, true, true]);
+  const [objectifs, setObjectifs] = usePersistentState('objectifsA', [50, 50, 50, 50]);
+  const [editIndex, setEditIndex] = useState(null);
+  const [editDraft, setEditDraft] = useState({ label: "", color: "", objectif: 50 });
+  const chartRef = useRef(null);
+
+  // Génération des couleurs dynamiques
+  const getCounterColor = (c) => c.color || c.border || "#646cff";
+  const getCounterBg = (c) => c.bg || `${getCounterColor(c)}22`;
+  const getCounterGrad = (c) => c.grad || getCounterColor(c);
 
   const data = {
-    labels: colors.map(c => c.label),
+    labels: counters.map(c => c.label),
     datasets: [
       {
-        label: 'Category C Counters',
+        label: categoryLabel,
         data: counts,
-        backgroundColor: colors.map(c => c.bg),
-        borderColor: colors.map(c => c.border),
+        backgroundColor: counters.map(getCounterBg),
+        borderColor: counters.map(getCounterColor),
         borderWidth: 2,
         borderRadius: 12,
       },
@@ -84,7 +95,7 @@ function CategoryC() {
 
   const lineData = {
     labels,
-    datasets: colors.map((c, i) => ({
+    datasets: counters.map((c, i) => ({
       label: c.label,
       data: getCountsPerMinute(history.filter(h => h.index === i), windowMs, points),
       borderColor: c.border,
@@ -123,7 +134,7 @@ function CategoryC() {
 
   const lineData2 = {
     labels: labels2,
-    datasets: colors.map((c, i) => ({
+    datasets: counters.map((c, i) => ({
       label: c.label,
       data: getCountsPerDay(history.filter(h => h.index === i), days),
       borderColor: c.border,
@@ -161,7 +172,7 @@ function CategoryC() {
 
   const lineData3 = {
     labels: labels3,
-    datasets: colors.map((c, i) => ({
+    datasets: counters.map((c, i) => ({
       label: c.label,
       data: getCountsPerHour(history.filter(h => h.index === i), hours),
       borderColor: c.border,
@@ -173,7 +184,7 @@ function CategoryC() {
 
   function getStats(period) {
     const now = new Date();
-    return colors.map((c, i) => {
+    return counters.map((c, i) => {
       let count = 0;
       history.forEach(h => {
         const t = new Date(h.time);
@@ -192,32 +203,160 @@ function CategoryC() {
       const newCounts = counts.map((v, j) => j === i ? v + 1 : v);
       setHistory(hist => [
         ...hist,
-        { time: new Date().toISOString(), compteur: colors[i].label, index: i }
+        { time: new Date().toISOString(), compteur: counters[i].label, index: i }
       ]);
       return newCounts;
     });
   };
 
+  // Modification via pop-up
+  const openEdit = (i) => {
+    setEditIndex(i);
+    setEditDraft({
+      label: counters[i].label,
+      color: getCounterColor(counters[i]),
+      objectif: objectifs[i]
+    });
+  };
+  const applyEdit = () => {
+    setConfig(cfg => ({
+      ...cfg,
+      counters: {
+        ...cfg.counters,
+        [categoryKey]: cfg.counters[categoryKey].map((c, j) =>
+          j === editIndex ? { ...c, label: editDraft.label, color: editDraft.color, border: editDraft.color, bg: `${editDraft.color}22` } : c
+        )
+      }
+    }));
+    setObjectifs(obj => obj.map((v, j) => j === editIndex ? Number(editDraft.objectif) : v));
+    setEditIndex(null);
+  };
+  const cancelEdit = () => setEditIndex(null);
+
+  // Filtre l'historique selon la période sélectionnée
+  function filterHistoryByPeriod(history, period, customRange) {
+    const now = new Date();
+    let start;
+    switch (period) {
+      case "today":
+        start = new Date(now); start.setHours(0,0,0,0); break;
+      case "24h":
+        start = new Date(now.getTime() - 24*60*60*1000); break;
+      case "48h":
+        start = new Date(now.getTime() - 48*60*60*1000); break;
+      case "7d":
+        start = new Date(now.getTime() - 7*24*60*60*1000); break;
+      case "1m":
+        start = new Date(now.getTime() - 30*24*60*60*1000); break;
+      case "custom":
+        start = customRange.start ? new Date(customRange.start) : null;
+        break;
+      default:
+        start = null;
+    }
+    let end = period === "custom" && customRange.end ? new Date(customRange.end) : now;
+    return history.filter(h => {
+      const t = new Date(h.time);
+      return (!start || t >= start) && (!end || t <= end);
+    });
+  }
+
+  const filteredHistory = filterHistoryByPeriod(history, period, customRange);
+
+  // Génère les labels et data selon la granularité
+  let lineLabels, getDataFunc, dataArg;
+  if (granularity === "day") {
+    lineLabels = labels2;
+    getDataFunc = getCountsPerDay;
+    dataArg = days;
+  } else if (granularity === "hour") {
+    lineLabels = labels3;
+    getDataFunc = getCountsPerHour;
+    dataArg = hours;
+  } else {
+    lineLabels = labels;
+    getDataFunc = getCountsPerMinute;
+    dataArg = points;
+  }
+
+  const filteredLineData = {
+    labels: lineLabels,
+    datasets: counters
+      .map((c, i) => visibleCounters[i] ? {
+        label: c.label,
+        data: getDataFunc(filteredHistory.filter(h => h.index === i), dataArg),
+        borderColor: c.border || c.color,
+        backgroundColor: c.bg || c.color,
+        fill: false,
+        tension: 0.2,
+      } : null)
+      .filter(Boolean)
+  };
+
   return (
     <div className="dashboard">
+      <div className="category-header">
+        <h2>{categoryLabel}</h2>
+        <div className="category-actions">
+          <button onClick={() => exportToCSV("stats.csv", [
+            ["Date", "Compteur", "Index"],
+            ...history.map(h => [h.time, h.compteur, h.index])
+          ])}>
+            Exporter CSV
+          </button>
+          <button
+            onClick={() => {
+              // Vérifie que le ref est bien attaché
+              if (chartRef.current) {
+                // Pour react-chartjs-2 v4+, il faut accéder à chartRef.current.canvas
+                const chartInstance = chartRef.current;
+                // Chart.js v3/v4 : chartInstance.toBase64Image()
+                const url = chartInstance.toBase64Image("image/png", 1);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "graph.png";
+                a.click();
+              } else {
+                alert("Graphique non prêt !");
+              }
+            }}
+          >
+            Exporter Image
+          </button>
+        </div>
+      </div>
       <div className="dashboard-row">
         <div className="dashboard-row-top">
           <div className="graph-container large">
-            <Bar data={data} options={options} />
+            <Bar ref={chartRef} data={data} options={options} />
           </div>
           <div className="counter-list large">
             <div className="counter-grid">
-              {colors.map((c, i) => {
-                const objectif = 50;
+              {counters.map((c, i) => {
+                const objectif = objectifs[i];
                 const value = Math.min(counts[i], objectif);
-                const percent = value / objectif;
+                const percent = objectif ? value / objectif : 0;
                 const svgSize = 120;
                 const radius = 50;
                 const strokeWidth = 10;
                 const circumference = 2 * Math.PI * radius;
                 const dash = percent * circumference;
                 return (
-                  <div className="counter-square" key={i} style={{ background: c.box }}>
+                  <div
+                    className="counter-square"
+                    key={i}
+                    style={{ background: getCounterBg(c) }}
+                    onMouseEnter={e => e.currentTarget.classList.add('hover')}
+                    onMouseLeave={e => e.currentTarget.classList.remove('hover')}
+                  >
+                    <button
+                      className="edit-btn"
+                      style={{pointerEvents: "auto" }}
+                      onClick={() => openEdit(i)}
+                      tabIndex={-1}
+                    >
+                      <FaPen size={16} />
+                    </button>
                     <div className="counter-center">
                       <svg className="progress-circle" width={svgSize} height={svgSize}>
                         <circle
@@ -230,7 +369,7 @@ function CategoryC() {
                         <circle
                           className="progress-bar"
                           cx={svgSize/2} cy={svgSize/2} r={radius}
-                          stroke={c.border}
+                          stroke={getCounterColor(c)}
                           strokeWidth={strokeWidth}
                           fill="none"
                           strokeDasharray={`${dash},${circumference - dash}`}
@@ -239,11 +378,54 @@ function CategoryC() {
                       </svg>
                       <button
                         className="plus-btn"
-                        style={{background: c.grad}}
+                        style={{
+                          background: getCounterColor(c),
+                          color: "#fff"
+                        }}
                         onClick={() => handleIncrement(i)}
                       >+1</button>
                     </div>
                     <div className="counter-label">{c.label}</div>
+                    {editIndex === i && (
+                      <div className="modal-overlay">
+                        <div className="modal modern-modal">
+                          <h3>Personnaliser le compteur</h3>
+                          <div className="modal-fields">
+                            <label>
+                              <span>Nom</span>
+                              <input
+                                type="text"
+                                value={editDraft.label}
+                                onChange={e => setEditDraft(d => ({ ...d, label: e.target.value }))}
+                                maxLength={32}
+                                autoFocus
+                              />
+                            </label>
+                            <label>
+                              <span>Couleur</span>
+                              <input
+                                type="color"
+                                value={editDraft.color}
+                                onChange={e => setEditDraft(d => ({ ...d, color: e.target.value }))}
+                              />
+                            </label>
+                            <label>
+                              <span>Objectif</span>
+                              <input
+                                type="number"
+                                min={1}
+                                value={editDraft.objectif}
+                                onChange={e => setEditDraft(d => ({ ...d, objectif: e.target.value }))}
+                              />
+                            </label>
+                          </div>
+                          <div className="modal-actions">
+                            <button className="btn-accent" onClick={applyEdit}>Appliquer</button>
+                            <button className="btn-outline" onClick={cancelEdit}>Annuler</button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -262,7 +444,7 @@ function CategoryC() {
               </tr>
             </thead>
             <tbody>
-              {colors.map((c, i) => (
+              {counters.map((c, i) => (
                 <tr key={i}>
                   <td>{c.label}</td>
                   <td>{getStats('minute')[i]}</td>
@@ -273,8 +455,20 @@ function CategoryC() {
               ))}
             </tbody>
           </table>
+          <div style={{ margin: "1.2em 0 0.7em 0" }}>
+            <GraphFilters
+              period={period} setPeriod={setPeriod}
+              granularity={granularity} setGranularity={setGranularity}
+              visibleCounters={visibleCounters} setVisibleCounters={setVisibleCounters}
+              counters={counters}
+              customRange={customRange} setCustomRange={setCustomRange}
+            />
+          </div>
           <div className="graph-container large">
-            <Line data={lineData2} options={{ plugins: { legend: { labels: { color: colors[0].border }}}}} />
+            <div className="graph-header">
+              <span className="graph-title">Courbe des compteurs</span>
+            </div>
+            <Line ref={chartRef} data={filteredLineData} options={{ plugins: { legend: { labels: { color: counters[0].border }}}}} />
           </div>
         </div>
       </div>
