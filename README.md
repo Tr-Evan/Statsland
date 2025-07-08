@@ -112,19 +112,9 @@ src
 
 ---
 
-## 💡 Astuces
-
-- Cliquez sur le bouton « Récapitulatif » (arc-en-ciel) dans la sidebar pour voir la synthèse globale.
-- Utilisez le bouton « +1 » au centre de chaque jauge pour incrémenter rapidement vos compteurs.
-- Changez de thème à tout moment pour un affichage optimal selon votre environnement.
-- Les jauges circulaires sont paramétrées pour un objectif de 50 (modifiable dans le code).
-
----
 
 ## 🖥️ Auteur & contact
 
 Projet réalisé par Evan Troget.  
 
 ---
-
-Merci d'avoir consulté Statsland! J'espère que ce projet vous sera utile et inspirant.
