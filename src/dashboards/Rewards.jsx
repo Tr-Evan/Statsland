@@ -786,6 +786,51 @@ export default function Rewards() {
   return (
     <div className="dashboard">
       <h2>Défis & Récompenses Générales</h2>
+
+      {/* SECTION PROGRESSION TOTALE EN HAUT */}
+      <div className="rewards-total-progress-section">
+        <div className="rewards-total-progress-title">
+          Progression Totale des Récompenses
+        </div>
+        <div className="rewards-total-progress-inner">
+          <div className="rewards-total-progress-bar-bg">
+            <div
+              className="rewards-total-progress-bar"
+              style={{
+                width: `${Math.round(totalProgress * 100)}%`,
+                boxShadow: totalProgress >= 1 ? "0 0 24px 8px gold" : "0 0 8px 2px #646cff55",
+              }}
+            />
+          </div>
+          <div className={`rewards-total-progress-percent${totalProgress >= 1 ? " done" : ""}`}>
+            {totalProgress >= 1 ? "🎉 100% Terminé !" : `${Math.round(totalProgress * 100)}%`}
+            {totalProgress >= 1 ? <span style={{fontSize: "1.2em"}}>🏆</span> : null}
+          </div>
+          <div className="rewards-total-progress-desc">
+            {totalProgress >= 1
+              ? "Félicitations, tu as débloqué toutes les récompenses !"
+              : "Continue pour débloquer toutes les récompenses et deviens un(e) vrai(e) champion(ne) Statsland !"}
+          </div>
+          <div className="rewards-total-progress-stars">
+            {[...Array(12)].map((_, i) => (
+              <span
+                key={i}
+                style={{
+                  position: "absolute",
+                  left: `${8 + i * 7.5}%`,
+                  fontSize: `${1.1 + Math.sin(i) * 0.5}em`,
+                  color: "#ffd600",
+                  opacity: 0.7 + 0.3 * Math.abs(Math.sin(i * 2)),
+                  filter: "drop-shadow(0 0 6px #ffd60088)",
+                  animation: `star-float 2.2s ${i * 0.13}s infinite alternate`
+                }}
+              >⭐</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* GRILLE DES RÉCOMPENSES */}
       <div className="rewards-goals-grid" style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
@@ -862,48 +907,6 @@ export default function Rewards() {
             )}
           </div>
         ))}
-      </div>
-      {/* SECTION PROGRESSION TOTALE */}
-      <div className="rewards-total-progress-section">
-        <div className="rewards-total-progress-title">
-          Progression Totale des Récompenses
-        </div>
-        <div className="rewards-total-progress-inner">
-          <div className="rewards-total-progress-bar-bg">
-            <div
-              className="rewards-total-progress-bar"
-              style={{
-                width: `${Math.round(totalProgress * 100)}%`,
-                boxShadow: totalProgress >= 1 ? "0 0 24px 8px gold" : "0 0 8px 2px #646cff55",
-              }}
-            />
-          </div>
-          <div className={`rewards-total-progress-percent${totalProgress >= 1 ? " done" : ""}`}>
-            {totalProgress >= 1 ? "🎉 100% Terminé !" : `${Math.round(totalProgress * 100)}%`}
-            {totalProgress >= 1 ? <span style={{fontSize: "1.2em"}}>🏆</span> : null}
-          </div>
-          <div className="rewards-total-progress-desc">
-            {totalProgress >= 1
-              ? "Félicitations, tu as débloqué toutes les récompenses !"
-              : "Continue pour débloquer toutes les récompenses et deviens un(e) vrai(e) champion(ne) Statsland !"}
-          </div>
-          <div className="rewards-total-progress-stars">
-            {[...Array(12)].map((_, i) => (
-              <span
-                key={i}
-                style={{
-                  position: "absolute",
-                  left: `${8 + i * 7.5}%`,
-                  fontSize: `${1.1 + Math.sin(i) * 0.5}em`,
-                  color: "#ffd600",
-                  opacity: 0.7 + 0.3 * Math.abs(Math.sin(i * 2)),
-                  filter: "drop-shadow(0 0 6px #ffd60088)",
-                  animation: `star-float 2.2s ${i * 0.13}s infinite alternate`
-                }}
-              >⭐</span>
-            ))}
-          </div>
-        </div>
       </div>
       <style>
         {`

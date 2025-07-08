@@ -260,3 +260,27 @@
   0%, 100% { transform: scale(1);}
   50% { transform: scale(1.22) rotate(-10deg);}
 }
+
+@media (max-width: 900px) {
+  .sidebar {
+    left: 0;
+    width: 80vw;
+    min-width: 180px;
+    max-width: 340px;
+    z-index: 100;
+    transition: left 0.3s;
+  }
+}
+.sidebar-toggle-btn {
+  background: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  box-shadow: 0 2px 8px #646cff22;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 200;
+}
