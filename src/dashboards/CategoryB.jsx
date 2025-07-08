@@ -14,13 +14,13 @@ function CategoryB({ config, setConfig }) {
   const counters = config.counters[categoryKey];
   const categoryLabel = config.categories.find(cat => cat.key === categoryKey)?.label || "Catégorie";
 
-  const [counts, setCounts] = usePersistentState('categoryB_counts', [0, 0, 0, 0]);
+  const [counts, setCounts] = usePersistentState('categoryB_counts', [0, 0, 0, 0, 0, 0]);
   const [history, setHistory] = usePersistentState('categoryB_history', []);
   const [period, setPeriod] = useState("7d");
   const [granularity, setGranularity] = useState("day");
   const [customRange, setCustomRange] = useState({start: "", end: ""});
-  const [visibleCounters, setVisibleCounters] = useState([true, true, true, true]);
-  const [objectifs, setObjectifs] = usePersistentState('objectifsB', [50, 50, 50, 50]);
+  const [visibleCounters, setVisibleCounters] = useState([true, true, true, true, true, true]);
+  const [objectifs, setObjectifs] = usePersistentState('objectifsB', [50, 50, 50, 50, 50, 50]);
   const [editIndex, setEditIndex] = useState(null);
   const [editDraft, setEditDraft] = useState({ label: "", color: "", objectif: 50 });
   const chartRef = useRef(null);

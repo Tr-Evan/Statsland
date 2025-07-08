@@ -11,17 +11,25 @@ const defaultConfig = {
       { label: "Compteur Vert", color: "#4bc0c0" },
       { label: "Compteur Bleu", color: "#36a2eb" },
       { label: "Compteur Jaune", color: "#ffce56" },
-      { label: "Compteur Rouge", color: "#ff6384" }
+      { label: "Compteur Rouge", color: "#ff6384" },
+      { label: "Compteur Violet", color: "#6f31b5" },
+      { label: "Compteur Orange", color: "#d48728" }
     ],
-    "category-b": [ { label: "Compteur Vert", color: "#4bc0c0" },
+    "category-b": [ 
+      { label: "Compteur Vert", color: "#4bc0c0" },
       { label: "Compteur Bleu", color: "#36a2eb" },
       { label: "Compteur Jaune", color: "#ffce56" },
-      { label: "Compteur Rouge", color: "#ff6384" } 
+      { label: "Compteur Rouge", color: "#ff6384" },
+      { label: "Compteur Violet", color: "#6f31b5" },
+      { label: "Compteur Orange", color: "#d48728" }
     ], 
-    "category-c": [ { label: "Compteur Vert", color: "#4bc0c0" },
+    "category-c": [ 
+      { label: "Compteur Vert", color: "#4bc0c0" },
       { label: "Compteur Bleu", color: "#36a2eb" },
       { label: "Compteur Jaune", color: "#ffce56" },
-      { label: "Compteur Rouge", color: "#ff6384" } 
+      { label: "Compteur Rouge", color: "#ff6384" },
+      { label: "Compteur Violet", color: "#6f31b5" },
+      { label: "Compteur Orange", color: "#d48728" }
     ]
   }
 };

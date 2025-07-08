@@ -118,7 +118,7 @@ html, body, #root {
 
 .counter-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 1rem;
   width: 100%;
@@ -129,6 +129,13 @@ html, body, #root {
   max-height: 100%;
   justify-items: center;
   align-items: center;
+}
+
+@media (max-width: 900px) {
+  .counter-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, 1fr);
+  }
 }
 
 .counter-square {

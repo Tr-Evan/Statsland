@@ -40,6 +40,14 @@ const Sidebar = ({ theme, toggleTheme, config }) => {
               <span>Récap</span>
             </Link>
           </li>
+          <li>
+            <Link
+              to="/rewards"
+              className={location.pathname === '/rewards' ? 'active' : ''}
+            >
+              <span>Récompenses</span>
+            </Link>
+          </li>
         </ul>
       </nav>
       <div className="sidebar-bottom">

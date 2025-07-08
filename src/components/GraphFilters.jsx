@@ -11,33 +11,6 @@ export default function GraphFilters({
     <div className="graph-filters-modern vertical">
       <div className="gf-group">
         <label>
-          Période
-          <select value={period} onChange={e => setPeriod(e.target.value)}>
-            <option value="today">Aujourd'hui</option>
-            <option value="24h">24h</option>
-            <option value="48h">48h</option>
-            <option value="7d">7 jours</option>
-            <option value="1m">1 mois</option>
-            <option value="custom">Personnalisé</option>
-          </select>
-        </label>
-        {period === "custom" && (
-          <div className="gf-custom-range">
-            <input
-              type="date"
-              value={customRange.start}
-              onChange={e => setCustomRange(r => ({ ...r, start: e.target.value }))}
-            />
-            <input
-              type="date"
-              value={customRange.end}
-              onChange={e => setCustomRange(r => ({ ...r, end: e.target.value }))}
-            />
-          </div>
-        )}
-      </div>
-      <div className="gf-group">
-        <label>
           Granularité
           <select value={granularity} onChange={e => setGranularity(e.target.value)}>
             <option value="hour">Par heure</option>
