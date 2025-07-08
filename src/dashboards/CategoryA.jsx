@@ -201,12 +201,12 @@ function CategoryA({ config, setConfig }) {
   const handleIncrement = (i) => {
     setCounts(counts => {
       const newCounts = counts.map((v, j) => j === i ? v + 1 : v);
-      setHistory(hist => [
-        ...hist,
-        { time: new Date().toISOString(), compteur: counters[i].label, index: i }
-      ]);
       return newCounts;
     });
+    setHistory(hist => [
+      ...hist,
+      { time: new Date().toISOString(), compteur: counters[i].label, index: i }
+    ]);
   };
 
   // Modification via pop-up

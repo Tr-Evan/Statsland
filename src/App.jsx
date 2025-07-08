@@ -11,12 +11,16 @@ import './styles/App.css';
 import { useStatslandConfig } from "./hooks/useStatslandConfig";
 
 function App() {
-  const [theme, setTheme] = useState('light');
+  // --- Correction : persistance du thème ---
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('statsland_theme') || 'light';
+  });
   const [config, setConfig] = useStatslandConfig();
 
   useEffect(() => {
     document.body.classList.remove('light-mode', 'dark-mode');
     document.body.classList.add(theme === 'light' ? 'light-mode' : 'dark-mode');
+    localStorage.setItem('statsland_theme', theme); // <-- Sauvegarde le thème
   }, [theme]);
 
   const toggleTheme = () => {
@@ -33,7 +37,7 @@ function App() {
             <Route path="/category-a" element={<CategoryA config={config} setConfig={setConfig} />} />
             <Route path="/category-b" element={<CategoryB config={config} setConfig={setConfig} />} />
             <Route path="/category-c" element={<CategoryC config={config} setConfig={setConfig} />} />
-            <Route path="/recap" element={<Recap />} /> {/* Ajout du récap */}
+            <Route path="/recap" element={<Recap />} />
             <Route path="/rewards" element={<Rewards />} />
           </Routes>
         </main>

@@ -4,9 +4,24 @@ import ThemeToggle from './ThemeToggle';
 import logo from '../assets/logo.svg';
 import '../styles/Sidebar.css';
 
+// Simule la détection d'un objectif atteint (à remplacer par la vraie logique)
+function useAnyRewardAchieved() {
+  // À remplacer par une vraie détection (localStorage, contexte, etc.)
+  const [achieved, setAchieved] = useState(false);
+  useEffect(() => {
+    // Exemple : check localStorage ou une API
+    const reward = localStorage.getItem("statsland_any_reward");
+    setAchieved(reward === "1");
+    // Pour test, décommente pour forcer l'affichage :
+    // setAchieved(true);
+  }, []);
+  return achieved;
+}
+
 const Sidebar = ({ theme, toggleTheme, config }) => {
   const [now, setNow] = useState(new Date());
   const location = useLocation();
+  const anyReward = useAnyRewardAchieved();
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -40,12 +55,16 @@ const Sidebar = ({ theme, toggleTheme, config }) => {
               <span>Récap</span>
             </Link>
           </li>
-          <li>
+          <li style={{ position: "relative" }}>
             <Link
               to="/rewards"
-              className={location.pathname === '/rewards' ? 'active' : ''}
+              className={`rewards-link${location.pathname === '/rewards' ? ' active' : ''}`}
             >
               <span>Récompenses</span>
+              {anyReward && (
+                <span className="rewards-notif-star" aria-label="Objectif atteint" title="Objectif atteint !">⭐</span>
+              )}
+              <span className="rewards-firework" aria-hidden="true">✨</span>
             </Link>
           </li>
         </ul>
