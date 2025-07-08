@@ -223,7 +223,17 @@ function CategoryB({ config, setConfig }) {
       counters: {
         ...cfg.counters,
         [categoryKey]: cfg.counters[categoryKey].map((c, j) =>
-          j === editIndex ? { ...c, label: editDraft.label, color: editDraft.color, border: editDraft.color, bg: `${editDraft.color}22` } : c
+          j === editIndex
+            ? {
+                ...c,
+                label: editDraft.label,
+                color: editDraft.color,
+                border: editDraft.color,
+                bg: `${editDraft.color}22`,
+                lastEdit: Date.now(), // <-- Ajoute/MAJ lastEdit
+                createdAt: c.createdAt || Date.now() // <-- Ajoute createdAt si absent
+              }
+            : c
         )
       }
     }));
@@ -297,10 +307,13 @@ function CategoryB({ config, setConfig }) {
       <div className="category-header">
         <h2>{categoryLabel}</h2>
         <div className="category-actions">
-          <button onClick={() => exportToCSV("stats.csv", [
-            ["Date", "Compteur", "Index"],
-            ...history.map(h => [h.time, h.compteur, h.index])
-          ])}>
+          <button onClick={() => {
+            exportToCSV("stats.csv", [
+              ["Date", "Compteur", "Index"],
+              ...history.map(h => [h.time, h.compteur, h.index])
+            ]);
+            localStorage.setItem("statsland_exported", "1"); // <-- Ajoute cette ligne
+          }}>
             Exporter CSV
           </button>
           <button onClick={() => {
@@ -311,6 +324,7 @@ function CategoryB({ config, setConfig }) {
               a.href = url;
               a.download = "graph.png";
               a.click();
+              localStorage.setItem("statsland_exported", "1"); // <-- Ajoute cette ligne
             } else {
               alert("Graphique non prêt !");
             }
