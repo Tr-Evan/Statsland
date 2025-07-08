@@ -428,42 +428,46 @@ function CategoryB({ config, setConfig }) {
           </div>
         </div>
         <div className="dashboard-row-bottom">
-          <table className="stats-table large">
-            <thead>
-              <tr>
-                <th>Compteur</th>
-                <th>Dernière minute</th>
-                <th>Dernière heure</th>
-                <th>Dernier jour</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {counters.map((c, i) => (
-                <tr key={i}>
-                  <td>{c.label}</td>
-                  <td>{getStats('minute')[i]}</td>
-                  <td>{getStats('hour')[i]}</td>
-                  <td>{getStats('day')[i]}</td>
-                  <td>{counts[i]}</td>
+          <div className="stats-table-container">
+            <table className="stats-table large">
+              <thead>
+                <tr>
+                  <th>Compteur</th>
+                  <th>Dernière minute</th>
+                  <th>Dernière heure</th>
+                  <th>Dernier jour</th>
+                  <th>Total</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <div style={{ margin: "1.2em 0 0.7em 0" }}>
-            <GraphFilters
-              period={period} setPeriod={setPeriod}
-              granularity={granularity} setGranularity={setGranularity}
-              visibleCounters={visibleCounters} setVisibleCounters={setVisibleCounters}
-              counters={counters}
-              customRange={customRange} setCustomRange={setCustomRange}
-            />
+              </thead>
+              <tbody>
+                {counters.map((c, i) => (
+                  <tr key={i}>
+                    <td>{c.label}</td>
+                    <td>{getStats('minute')[i]}</td>
+                    <td>{getStats('hour')[i]}</td>
+                    <td>{getStats('day')[i]}</td>
+                    <td>{counts[i]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <div className="graph-container large">
-            <div className="graph-header">
-              <span className="graph-title">Courbe des compteurs</span>
+          <div className="graph-container large graph-flex">
+            <div className="graph-side-panel">
+              <span className="graph-title">{categoryLabel} – Courbe</span>
+              <div className="graph-filters-vertical">
+                <GraphFilters
+                  period={period} setPeriod={setPeriod}
+                  granularity={granularity} setGranularity={setGranularity}
+                  visibleCounters={visibleCounters} setVisibleCounters={setVisibleCounters}
+                  counters={counters}
+                  customRange={customRange} setCustomRange={setCustomRange}
+                />
+              </div>
             </div>
-            <Line ref={chartRef} data={filteredLineData} options={{ plugins: { legend: { labels: { color: counters[0].border }}}}} />
+            <div className="graph-canvas-panel">
+              <Line ref={chartRef} data={filteredLineData} options={{ plugins: { legend: { labels: { color: counters[0].border }}}}} />
+            </div>
           </div>
         </div>
       </div>
