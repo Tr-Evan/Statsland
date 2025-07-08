@@ -69,7 +69,7 @@ function CategoryA({ config, setConfig }) {
     return result;
   }
 
-  // Variante simple : variation binaire (action ou pas à chaque "tick")
+  
   function getVariation(history, windowMs = 60000, points = 20) {
     const now = Date.now();
     const result = [];
@@ -305,11 +305,8 @@ function CategoryA({ config, setConfig }) {
             Exporter CSV
           </button>
           <button onClick={() => {
-            // Vérifie que le ref est bien attaché
             if (chartRef.current) {
-              // Pour react-chartjs-2 v4+, il faut accéder à chartRef.current.canvas
               const chartInstance = chartRef.current;
-              // Chart.js v3/v4 : chartInstance.toBase64Image()
               const url = chartInstance.toBase64Image("image/png", 1);
               const a = document.createElement("a");
               a.href = url;

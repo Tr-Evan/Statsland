@@ -1,10 +1,9 @@
 import React, { useMemo } from "react";
 import "../styles/Dashboard.css";
 
-// Exemple d'accès aux données globales (à adapter selon ton archi)
 import { usePersistentState } from "../hooks/usePersistentState";
 
-// Liste d'objectifs généraux ludiques
+// Liste d'objectifs généraux
 const GENERAL_GOALS = [
   {
     id: "click_150_minute",
@@ -102,7 +101,7 @@ function getEmojiStep(progress) {
 }
 
 export default function Rewards() {
-  // Récupère les données réelles des catégories (exemple avec CategoryA)
+  // Récupère les données réelles des catégories
   const [countsA] = usePersistentState("categoryA_counts", [0,0,0,0,0,0]);
   const [countsB] = usePersistentState("categoryB_counts", [0,0,0,0,0,0]);
   const [countsC] = usePersistentState("categoryC_counts", [0,0,0,0,0,0]);

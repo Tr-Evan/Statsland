@@ -1,37 +1,48 @@
 # 📊 Statsland
 
-Statsland est un dashboard interactif réalisé en React + Vite, permettant de suivre et visualiser des compteurs personnalisés par catégorie, avec des graphiques dynamiques, des objectifs visuels et un mode sombre/clair.
+Statsland est un dashboard interactif et ludique réalisé en **React + Vite**, permettant de suivre, visualiser et gamifier des compteurs personnalisés par catégorie, avec des graphiques dynamiques, des objectifs animés, des récompenses et un mode sombre/clair.
 
 ---
 
 ## 🚀 Fonctionnalités principales
 
-- **Compteurs par catégorie**  
-  - 3 catégories principales (A, B, C), chacune avec 4 compteurs personnalisés.
+- **Compteurs personnalisés par catégorie**
+  - 3 catégories principales (A, B, C), chacune avec **6 compteurs** entièrement personnalisables (nom, couleur, objectif).
   - Incrémentation rapide via des boutons interactifs.
-  - Objectif visuel : chaque compteur affiche une jauge circulaire qui se remplit à mesure que l’on clique.
+  - Objectif visuel : chaque compteur affiche une jauge circulaire animée qui se remplit à mesure que l’on clique.
+  - Barre de progression animée sous chaque compteur.
+  - Modification du nom, de la couleur et de l’objectif de chaque compteur via une modale.
 
-- **Visualisation graphique**
-  - Graphique en barres pour la répartition des compteurs.
-  - Graphique en courbes (Line) pour l’évolution des compteurs par jour.
+- **Visualisation graphique avancée**
+  - **Graphique en barres** pour la répartition instantanée des compteurs.
+  - **Graphique en courbes** pour l’évolution des compteurs selon la granularité (minute, heure, jour).
+  - **Filtres dynamiques** : période, granularité, compteurs visibles.
   - Statistiques détaillées : nombre d’actions par minute, heure, jour, total.
 
 - **Récapitulatif global**
-  - Page dédiée `/recap` affichant un graphique global de toutes les catégories.
-  - Accès rapide via un bouton animé dans la sidebar.
+  - Page `/recap` affichant un graphique global de toutes les catégories.
+  - Visualisation de la progression totale et de l’historique d’actions.
+
+- **Récompenses & Défis ludiques**
+  - Page `/rewards` avec des **objectifs généraux** (ex : cliquer 150 fois en 1 minute, atteindre 100 sur un compteur, etc.).
+  - 4 paliers d’emoji animés pour chaque défi : loin de l’objectif, on y arrive, bientôt gagné, défi remporté.
+  - Barre de progression animée pour chaque défi.
+  - Animations et trophées visuels lors de la réussite d’un objectif.
+  - Les récompenses sont calculées dynamiquement à partir des vraies données des catégories.
+
+- **Sidebar ergonomique**
+  - Navigation rapide entre les catégories, le récapitulatif et les récompenses.
+  - Horloge en temps réel.
+  - Logo et branding personnalisés.
+  - Accès rapide au mode sombre/clair.
+
+- **Données persistantes**
+  - Toutes les actions sont sauvegardées dans le navigateur (**localStorage**).
+  - Les compteurs, historiques et objectifs sont conservés même après rechargement.
 
 - **Mode sombre / clair**
   - Basculer le thème à tout moment via le bouton en bas de la sidebar.
   - Couleurs et fonds adaptés automatiquement.
-
-- **Sidebar ergonomique**
-  - Navigation rapide entre les catégories et le récapitulatif.
-  - Horloge en temps réel.
-  - Logo et branding personnalisés.
-
-- **Données persistantes**
-  - Toutes les actions sont sauvegardées dans le navigateur (localStorage).
-  - Les compteurs et historiques sont conservés même après rechargement.
 
 ---
 
@@ -40,16 +51,11 @@ Statsland est un dashboard interactif réalisé en React + Vite, permettant de s
 ```bash
 src
 ├── assets          # Images, icônes, et autres fichiers statiques
-├── components      # Composants réutilisables (boutons, en-têtes, etc.)
-├── features        # Logique spécifique aux fonctionnalités (compteurs, graphiques)
-├── layouts         # Templates de pages (avec ou sans sidebar)
-├── pages          # Pages principales de l'application
-│   ├── Home.jsx    # Page d'accueil avec les compteurs
-│   ├── Recap.jsx   # Page de récapitulatif
-│   └── NotFound.jsx # Page 404
-├── services        # Appels API et gestion des données
-├── store           # Gestion de l'état global (Redux, Context API)
+├── components      # Composants réutilisables (Sidebar, GraphFilters, ThemeToggle, etc.)
+├── dashboards      # Pages principales (CategoryA, CategoryB, CategoryC, Recap, Rewards)
+├── hooks           # Hooks personnalisés (usePersistentState, useStatslandConfig)
 ├── styles          # Fichiers CSS et thèmes
+├── utils           # Fonctions utilitaires (exportCSV, etc.)
 └── App.jsx         # Composant racine
 ```
 
@@ -118,7 +124,6 @@ src
 ## 🖥️ Auteur & contact
 
 Projet réalisé par Evan Troget.  
-
 
 ---
 

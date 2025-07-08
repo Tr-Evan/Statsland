@@ -69,7 +69,6 @@ function CategoryB({ config, setConfig }) {
     return result;
   }
 
-  // Variante simple : variation binaire (action ou pas à chaque "tick")
   function getVariation(history, windowMs = 60000, points = 20) {
     const now = Date.now();
     const result = [];
