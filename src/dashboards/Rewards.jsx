@@ -792,6 +792,15 @@ export default function Rewards() {
       : g
   );
 
+  const uniqueGoals = [];
+  const seenIds = new Set();
+  for (const g of goals) {
+    if (!seenIds.has(g.id)) {
+      uniqueGoals.push(g);
+      seenIds.add(g.id);
+    }
+  }
+
   const totalProgress = goals.reduce((sum, g) => sum + Math.min(g.progress, 1), 0) / goals.length;
 
   return (
@@ -848,7 +857,7 @@ export default function Rewards() {
         gap: "2.2rem",
         margin: "2.5rem 0"
       }}>
-        {goals.map((g, i) => (
+        {uniqueGoals.map((g, i) => (
           <div
             key={g.id}
             className={`reward-goal-card ${g.anim}`}
