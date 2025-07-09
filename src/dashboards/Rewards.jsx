@@ -831,83 +831,77 @@ export default function Rewards() {
       </div>
 
       {/* GRILLE DES RÉCOMPENSES */}
-      <div className="rewards-goals-grid" style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-        gap: "2.2rem",
-        margin: "2.5rem 0"
-      }}>
-        {goals.map((g, i) => (
-          <div
-            key={g.id}
-            className={`reward-goal-card ${g.anim}`}
-            style={{
-              background: "#fff",
-              borderRadius: 18,
-              boxShadow: "0 2px 12px 0 rgba(100,108,255,0.10)",
-              padding: "2em 1.5em 1.5em 1.5em",
-              position: "relative",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              minHeight: 210,
-              overflow: "hidden"
-            }}
-          >
-            <div style={{ fontSize: "3.2em", marginBottom: 12, animation: g.progress >= 1 ? "emoji-pop 1.2s infinite alternate" : "emoji-bounce 1.2s infinite alternate" }}>
-              {g.emoji}
-            </div>
-            <div style={{ fontWeight: 700, fontSize: "1.15em", color: "#646cff", marginBottom: 10, textAlign: "center" }}>
-              {g.label}
-            </div>
-            <div style={{ width: "100%", marginBottom: 10 }}>
-              <div style={{
-                height: 12,
-                borderRadius: 7,
-                background: "#e0e0e0",
-                overflow: "hidden",
-                position: "relative"
-              }}>
-                <div style={{
-                  width: `${Math.min(g.progress, 1) * 100}%`,
-                  height: "100%",
-                  background: g.progress >= 1 ? "#ffd600" : "#646cff",
-                  transition: "width 0.7s cubic-bezier(.4,0,.2,1)",
-                  borderRadius: 7,
-                  boxShadow: g.progress >= 1 ? "0 0 12px 3px gold" : "none",
-                  animation: g.progress >= 1 ? "goal-blink 1.2s infinite alternate" : "none"
-                }} />
-              </div>
-            </div>
-            <div style={{
-              fontWeight: 600,
-              color: g.progress >= 1 ? "#ffd600" : "#646cff",
-              fontSize: "1.05em",
-              marginBottom: 6,
-              marginTop: 2
+      {CATEGORIES.map(cat => {
+        const catGoals = goals
+          .filter(g => cat.filter(g))
+          .sort(cat.sort)
+          .filter((g, i, arr) => arr.findIndex(x => x.id === g.id) === i); // éviter doublons
+
+        if (!catGoals.length) return null;
+        return (
+          <div key={cat.id} style={{margin: "3.5rem 0 2.5rem 0"}}>
+            <h3 style={{
+              color: cat.color,
+              fontWeight: 900,
+              fontSize: "2em",
+              letterSpacing: "1px",
+              marginBottom: "1.2rem",
+              marginTop: "2.5rem"
             }}>
-              {g.progress >= 1
-                ? "Défi remporté !"
-                : g.progress >= 0.85
-                  ? "Bientôt gagné !"
-                  : g.progress >= 0.5
-                    ? "On y arrive !"
-                    : "Loin de l'objectif..."}
+              {cat.label}
+            </h3>
+            <div className="rewards-goals-grid" style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+              gap: "2.2rem",
+              margin: "2.5rem 0"
+            }}>
+              {catGoals.map((g, i) => (
+                <div
+                  key={g.id}
+                  className={`reward-goal-card ${g.anim}`}
+                >
+                  <div className="reward-emoji" style={{ animation: g.progress >= 1 ? "emoji-pop 1.2s infinite alternate" : "emoji-bounce 1.2s infinite alternate" }}>
+                    {g.emoji}
+                  </div>
+                  <div className="reward-label">{g.label}</div>
+                  <div className="reward-progress-bar-bg">
+                    <div
+                      className="reward-progress-bar"
+                      style={{
+                        width: `${Math.min(g.progress, 1) * 100}%`,
+                        background: g.progress >= 1 ? "#ffd600" : undefined,
+                        boxShadow: g.progress >= 1 ? "0 0 12px 3px gold" : "none",
+                        animation: g.progress >= 1 ? "goal-blink 1.2s infinite alternate" : "none"
+                      }}
+                    />
+                  </div>
+                  <div className={`reward-status${g.progress >= 1 ? " done" : ""}`}>
+                    {g.progress >= 1
+                      ? "Défi remporté !"
+                      : g.progress >= 0.85
+                        ? "Bientôt gagné !"
+                        : g.progress >= 0.5
+                          ? "On y arrive !"
+                          : "Loin de l'objectif..."}
+                  </div>
+                  {g.progress >= 1 && (
+                    <div style={{
+                      position: "absolute",
+                      top: 10,
+                      right: 18,
+                      fontSize: "2.2em",
+                      animation: "emoji-pop 1.2s infinite alternate"
+                    }}>
+                      {g.emoji}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-            {g.progress >= 1 && (
-              <div style={{
-                position: "absolute",
-                top: 10,
-                right: 18,
-                fontSize: "2.2em",
-                animation: "emoji-pop 1.2s infinite alternate"
-              }}>
-                {g.emoji}
-              </div>
-            )}
           </div>
-        ))}
-      </div>
+        );
+      })}
       <style>
         {`
         @keyframes goal-blink {
@@ -936,3 +930,41 @@ export default function Rewards() {
     </div>
   );
 }
+
+const CATEGORIES = [
+  {
+    id: "clicks",
+    label: "Défis de Clics",
+    color: "#646cff",
+    filter: g => g.id.includes("combo") || g.id.includes("marathon") || g.id.includes("click") || g.id.includes("no_life") || g.id.includes("hyper_combo") || g.id.includes("speed_demon"),
+    sort: (a, b) => a.difficulty - b.difficulty
+  },
+  {
+    id: "objectifs",
+    label: "Défis d’Objectif",
+    color: "#ffce56",
+    filter: g => g.id.includes("objectif") || g.id.includes("perfect") || g.id.includes("all_") || g.id.includes("triple_objectif") || g.id.includes("clutch_master") || g.id.includes("speedrun"),
+    sort: (a, b) => a.difficulty - b.difficulty
+  },
+  {
+    id: "design",
+    label: "Défis de Personnalisation",
+    color: "#4bc0c0",
+    filter: g => g.id.includes("design") || g.id.includes("styliste") || g.id.includes("rainbow") || g.id.includes("edit") || g.id.includes("decouverte"),
+    sort: (a, b) => a.difficulty - b.difficulty
+  },
+  {
+    id: "timing",
+    label: "Défis de Timing",
+    color: "#ff6384",
+    filter: g => g.id.includes("matin") || g.id.includes("soir") || g.id.includes("noctambule") || g.id.includes("night") || g.id.includes("insomniaque") || g.id.includes("zen_master") || g.id.includes("midnight"),
+    sort: (a, b) => a.difficulty - b.difficulty
+  },
+  {
+    id: "autres",
+    label: "Autres Défis",
+    color: "#6f31b5",
+    filter: g => true,
+    sort: (a, b) => a.difficulty - b.difficulty
+  }
+];

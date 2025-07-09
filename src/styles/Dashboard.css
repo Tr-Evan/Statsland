@@ -614,12 +614,8 @@ html, body, #root {
 }
 
 .rewards-total-progress-section {
-  margin: 4rem 0 0 0;
-  width: 100vw;
-  left: 50%;
-  right: 50%;
-  position: relative;
-  transform: translateX(-50%);
+  margin: 3.5rem 0 2.5rem 0;
+  width: 100%;
   background: linear-gradient(90deg, #646cff 0%, #ffd600 100%);
   box-shadow: 0 8px 32px 0 rgba(100,108,255,0.13);
   border-radius: 2.5rem;
@@ -627,8 +623,11 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 100vw;
+  min-width: 0;
   overflow-y: visible;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .rewards-total-progress-inner {
@@ -714,4 +713,62 @@ html, body, #root {
     padding: 1.2rem 0 1.2rem 0;
     border-radius: 1.2rem;
   }
+}
+
+.reward-goal-card {
+  background: linear-gradient(120deg, #fff 70%, #f6f8ff 100%);
+  border-radius: 22px;
+  box-shadow: 0 4px 24px 0 rgba(100,108,255,0.10);
+  padding: 2.2em 1.7em 1.7em 1.7em;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 230px;
+  overflow: hidden;
+  transition: box-shadow 0.2s, transform 0.2s;
+  border: 2px solid #f0f0f0;
+}
+.reward-goal-card:hover {
+  box-shadow: 0 8px 32px 0 rgba(100,108,255,0.18);
+  transform: translateY(-4px) scale(1.025);
+  border-color: #ffd60055;
+}
+.reward-goal-card .reward-emoji {
+  font-size: 3.2em;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 2px 8px #ffd60033);
+}
+.reward-goal-card .reward-label {
+  font-weight: 700;
+  font-size: 1.15em;
+  color: #646cff;
+  margin-bottom: 10px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.reward-goal-card .reward-progress-bar-bg {
+  width: 100%;
+  height: 12px;
+  border-radius: 7px;
+  background: #e0e0e0;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 10px;
+}
+.reward-goal-card .reward-progress-bar {
+  height: 100%;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #ffd600 0%, #646cff 100%);
+  transition: width 0.7s cubic-bezier(.4,0,.2,1);
+}
+.reward-goal-card .reward-status {
+  font-weight: 600;
+  font-size: 1.05em;
+  margin-bottom: 6px;
+  margin-top: 2px;
+  color: #646cff;
+}
+.reward-goal-card .reward-status.done {
+  color: #ffd600;
 }
