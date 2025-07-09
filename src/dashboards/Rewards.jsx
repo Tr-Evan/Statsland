@@ -2,6 +2,15 @@ import React, { useMemo } from "react";
 import "../styles/Dashboard.css";
 import { usePersistentState } from "../hooks/usePersistentState";
 
+const anims = ["emoji-far", "emoji-mid", "emoji-close", "emoji-win"];
+
+function getEmojiStep(progress) {
+  if (progress >= 1) return 3;
+  if (progress >= 0.85) return 2;
+  if (progress >= 0.5) return 1;
+  return 0;
+}
+
 // Liste d'objectifs généraux ludiques et variés
 const GENERAL_GOALS = [
   // RAPIDITÉ & COMBO
@@ -157,15 +166,18 @@ const GENERAL_GOALS = [
     label: "Styliste : changer la couleur de tous les compteurs",
     emoji: ["😴", "🙂", "😮", "🖌️"],
     check: ({ config, categoryKeys }) => {
-      // On considère qu'un compteur a été personnalisé si sa couleur n'est pas la couleur par défaut
       let total = 0, changed = 0;
       categoryKeys.forEach(key => {
         config.counters[key].forEach(c => {
           total++;
-          if (c.color && c.color !== "#646cff") changed++;
+          // Seulement si la couleur a été changée après la création
+          if (
+            c.color && c.color !== "#646cff" &&
+            c.lastEdit && c.createdAt && c.lastEdit > c.createdAt
+          ) changed++;
         });
       });
-      return Math.min(changed / total, 1);
+      return total > 0 ? Math.min(changed / total, 1) : 0;
     }
   },
   // EASTER EGG
@@ -200,7 +212,6 @@ const GENERAL_GOALS = [
       return found ? 1 : 0;
     }
   },
-  // DÉCOUVERTE
   {
     id: "decouverte",
     label: "Découverte : modifier le nom ou la couleur de chaque compteur au moins une fois",
@@ -210,10 +221,14 @@ const GENERAL_GOALS = [
       categoryKeys.forEach(key => {
         config.counters[key].forEach(c => {
           total++;
-          if ((c.label && c.label !== "") || (c.color && c.color !== "#646cff")) changed++;
+          // Seulement si le nom ou la couleur a été modifié après la création
+          if (
+            ((c.label && c.label !== "" && c.lastEdit && c.createdAt && c.lastEdit > c.createdAt) ||
+            (c.color && c.color !== "#646cff" && c.lastEdit && c.createdAt && c.lastEdit > c.createdAt))
+          ) changed++;
         });
       });
-      return Math.min(changed / total, 1);
+      return total > 0 ? Math.min(changed / total, 1) : 0;
     }
   },
   // OBJECTIF ÉCLAIR
@@ -482,22 +497,6 @@ GENERAL_GOALS.push(
   }
 );
 
-// Palette d'animations CSS
-const anims = [
-  "emoji-far",
-  "emoji-mid",
-  "emoji-close",
-  "emoji-win"
-];
-
-// Utilitaire pour trouver le palier d'emoji
-function getEmojiStep(progress) {
-  if (progress >= 1) return 3;
-  if (progress >= 0.85) return 2;
-  if (progress >= 0.5) return 1;
-  return 0;
-}
-
 // Ajoute ici de nouvelles récompenses variées, fun, faciles, moyennes, difficiles !
 const EXTRA_GOALS = [
   // FACILES
@@ -681,7 +680,23 @@ const EXTRA_GOALS = [
     id: "reset_king",
     label: "Reset King : Remettre à zéro tous les compteurs le même jour",
     emoji: ["😴", "🙂", "😮", "🔄"],
-    check: ({ counts }) => counts.every(v => v === 0) ? 1 : 0
+    check: ({ counts, config, categoryKeys }) => {
+      // Tous les compteurs doivent être à zéro ET avoir été modifiés (reset) après leur création, le même jour
+      let resetDay = null;
+      let allReset = true;
+      let idx = 0;
+      for (let key of categoryKeys) {
+        for (let c of config.counters[key]) {
+          if ((counts[idx] || 0) !== 0) { allReset = false; break; }
+          if (!c.lastEdit || !c.createdAt || c.lastEdit <= c.createdAt) { allReset = false; break; }
+          const day = new Date(c.lastEdit).toDateString();
+          if (!resetDay) resetDay = day;
+          if (resetDay !== day) { allReset = false; break; }
+          idx++;
+        }
+      }
+      return allReset ? 1 : 0;
+    }
   }
 ];
 
@@ -701,14 +716,12 @@ export default function Rewards() {
   const [objectifsC] = usePersistentState("objectifsC", [50, 50, 50, 50, 50, 50]);
   const [config] = usePersistentState("statsland_config", { counters: { "category-a": [], "category-b": [], "category-c": [] } });
 
-  // Fusionne toutes les données
   const allCounts = [...countsA, ...countsB, ...countsC];
   const allHistory = useMemo(() => [...historyA, ...historyB, ...historyC].sort((a, b) => new Date(a.time) - new Date(b.time)), [historyA, historyB, historyC]);
-  const objectifs = [...objectifsA, ...objectifsB, ...objectifsC]; // <-- Ajoute cette ligne
+  const objectifs = [...objectifsA, ...objectifsB, ...objectifsC];
   const countersCount = allCounts.length;
   const categoryKeys = ["category-a", "category-b", "category-c"];
 
-  // 1. Premier passage : calcule tous les progrès SANS goals
   let goals = ALL_GOALS.map((goal) => {
     const progress = goal.check({
       counts: allCounts,
@@ -717,7 +730,7 @@ export default function Rewards() {
       config,
       categoryKeys,
       objectifs,
-      goals: [] // temporaire, vide
+      goals: []
     });
     const step = getEmojiStep(progress);
     return {
@@ -729,7 +742,6 @@ export default function Rewards() {
     };
   });
 
-  // 2. Second passage : recalcule the_collector avec la vraie liste
   goals = goals.map(g =>
     g.id === "the_collector"
       ? {
@@ -741,7 +753,7 @@ export default function Rewards() {
             config,
             categoryKeys,
             objectifs,
-            goals // cette fois, la vraie liste !
+            goals
           }),
           step: getEmojiStep(
             ALL_GOALS.find(goal => goal.id === "the_collector").check({
@@ -780,12 +792,11 @@ export default function Rewards() {
       : g
   );
 
-  // Calcul de la progression totale (moyenne des progrès)
   const totalProgress = goals.reduce((sum, g) => sum + Math.min(g.progress, 1), 0) / goals.length;
 
   return (
     <div className="dashboard">
-      <h2>Défis & Récompenses Générales</h2>
+      <h2>Défis & Récompenses</h2>
 
       {/* SECTION PROGRESSION TOTALE EN HAUT */}
       <div className="rewards-total-progress-section">
@@ -831,77 +842,55 @@ export default function Rewards() {
       </div>
 
       {/* GRILLE DES RÉCOMPENSES */}
-      {CATEGORIES.map(cat => {
-        const catGoals = goals
-          .filter(g => cat.filter(g))
-          .sort(cat.sort)
-          .filter((g, i, arr) => arr.findIndex(x => x.id === g.id) === i); // éviter doublons
-
-        if (!catGoals.length) return null;
-        return (
-          <div key={cat.id} style={{margin: "3.5rem 0 2.5rem 0"}}>
-            <h3 style={{
-              color: cat.color,
-              fontWeight: 900,
-              fontSize: "2em",
-              letterSpacing: "1px",
-              marginBottom: "1.2rem",
-              marginTop: "2.5rem"
-            }}>
-              {cat.label}
-            </h3>
-            <div className="rewards-goals-grid" style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-              gap: "2.2rem",
-              margin: "2.5rem 0"
-            }}>
-              {catGoals.map((g, i) => (
-                <div
-                  key={g.id}
-                  className={`reward-goal-card ${g.anim}`}
-                >
-                  <div className="reward-emoji" style={{ animation: g.progress >= 1 ? "emoji-pop 1.2s infinite alternate" : "emoji-bounce 1.2s infinite alternate" }}>
-                    {g.emoji}
-                  </div>
-                  <div className="reward-label">{g.label}</div>
-                  <div className="reward-progress-bar-bg">
-                    <div
-                      className="reward-progress-bar"
-                      style={{
-                        width: `${Math.min(g.progress, 1) * 100}%`,
-                        background: g.progress >= 1 ? "#ffd600" : undefined,
-                        boxShadow: g.progress >= 1 ? "0 0 12px 3px gold" : "none",
-                        animation: g.progress >= 1 ? "goal-blink 1.2s infinite alternate" : "none"
-                      }}
-                    />
-                  </div>
-                  <div className={`reward-status${g.progress >= 1 ? " done" : ""}`}>
-                    {g.progress >= 1
-                      ? "Défi remporté !"
-                      : g.progress >= 0.85
-                        ? "Bientôt gagné !"
-                        : g.progress >= 0.5
-                          ? "On y arrive !"
-                          : "Loin de l'objectif..."}
-                  </div>
-                  {g.progress >= 1 && (
-                    <div style={{
-                      position: "absolute",
-                      top: 10,
-                      right: 18,
-                      fontSize: "2.2em",
-                      animation: "emoji-pop 1.2s infinite alternate"
-                    }}>
-                      {g.emoji}
-                    </div>
-                  )}
-                </div>
-              ))}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+        gap: "2.2rem",
+        margin: "2.5rem 0"
+      }}>
+        {goals.map((g, i) => (
+          <div
+            key={g.id}
+            className={`reward-goal-card ${g.anim}`}
+          >
+            <div className="reward-emoji" style={{ animation: g.progress >= 1 ? "emoji-pop 1.2s infinite alternate" : "emoji-bounce 1.2s infinite alternate" }}>
+              {g.emoji}
             </div>
+            <div className="reward-label">{g.label}</div>
+            <div className="reward-progress-bar-bg">
+              <div
+                className="reward-progress-bar"
+                style={{
+                  width: `${Math.min(g.progress, 1) * 100}%`,
+                  background: g.progress >= 1 ? "#ffd600" : undefined,
+                  boxShadow: g.progress >= 1 ? "0 0 12px 3px gold" : "none",
+                  animation: g.progress >= 1 ? "goal-blink 1.2s infinite alternate" : "none"
+                }}
+              />
+            </div>
+            <div className={`reward-status${g.progress >= 1 ? " done" : ""}`}>
+              {g.progress >= 1
+                ? "Défi remporté !"
+                : g.progress >= 0.85
+                  ? "Bientôt gagné !"
+                  : g.progress >= 0.5
+                    ? "On y arrive !"
+                    : "Loin de l'objectif..."}
+            </div>
+            {g.progress >= 1 && (
+              <div style={{
+                position: "absolute",
+                top: 10,
+                right: 18,
+                fontSize: "2.2em",
+                animation: "emoji-pop 1.2s infinite alternate"
+              }}>
+                {g.emoji}
+              </div>
+            )}
           </div>
-        );
-      })}
+        ))}
+      </div>
       <style>
         {`
         @keyframes goal-blink {
@@ -930,41 +919,3 @@ export default function Rewards() {
     </div>
   );
 }
-
-const CATEGORIES = [
-  {
-    id: "clicks",
-    label: "Défis de Clics",
-    color: "#646cff",
-    filter: g => g.id.includes("combo") || g.id.includes("marathon") || g.id.includes("click") || g.id.includes("no_life") || g.id.includes("hyper_combo") || g.id.includes("speed_demon"),
-    sort: (a, b) => a.difficulty - b.difficulty
-  },
-  {
-    id: "objectifs",
-    label: "Défis d’Objectif",
-    color: "#ffce56",
-    filter: g => g.id.includes("objectif") || g.id.includes("perfect") || g.id.includes("all_") || g.id.includes("triple_objectif") || g.id.includes("clutch_master") || g.id.includes("speedrun"),
-    sort: (a, b) => a.difficulty - b.difficulty
-  },
-  {
-    id: "design",
-    label: "Défis de Personnalisation",
-    color: "#4bc0c0",
-    filter: g => g.id.includes("design") || g.id.includes("styliste") || g.id.includes("rainbow") || g.id.includes("edit") || g.id.includes("decouverte"),
-    sort: (a, b) => a.difficulty - b.difficulty
-  },
-  {
-    id: "timing",
-    label: "Défis de Timing",
-    color: "#ff6384",
-    filter: g => g.id.includes("matin") || g.id.includes("soir") || g.id.includes("noctambule") || g.id.includes("night") || g.id.includes("insomniaque") || g.id.includes("zen_master") || g.id.includes("midnight"),
-    sort: (a, b) => a.difficulty - b.difficulty
-  },
-  {
-    id: "autres",
-    label: "Autres Défis",
-    color: "#6f31b5",
-    filter: g => true,
-    sort: (a, b) => a.difficulty - b.difficulty
-  }
-];

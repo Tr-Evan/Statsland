@@ -80,7 +80,6 @@ button:hover {
 .main-content {
   margin-top: 0;
   padding: 1rem;
-  min-height: 100vh;
   max-height: 100vh;
   width: calc(100vw - 240px);
   max-width: 100vw;
